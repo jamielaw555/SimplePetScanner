@@ -2,6 +2,7 @@ import sys
 sys.path.append('../analysis/')
 import SiemensQuadraProperties as sqp
 import ExplorerProperties as ep
+import UmiPanoramaProperties as pp
 from ActivityTools import *
 from SimulationDataset import *
 
@@ -61,6 +62,8 @@ siemensEmin = 435.0
 siemensEmax = 585.0
 explorerEmin = 430.0
 explorerEmax = 645.0
+panoramaEmin = 430.0
+panoramaEmax = 650.0
 
 # Nominal
 detectorMaterial = "LSO"
@@ -77,19 +80,26 @@ activityAtTimeExplorer, necrAtTimeExplorer, trueAtTimeExplorer, rPlusSAtTimeExpl
     tracerDataExplorer, crystalDataExplorer, ep.Lu176decaysInMass( ep.DetectorMass(detectorMaterial) ), ep.DetectorRadius(),
     phantomLength )
 mpl.clf()
+detectorMaterial = "LYSO"
+tracerDataPanorama = CreateDataset( 1850, "Panorama", phantomLength, "LinearF18", datasetSize, panoramaEmin, panoramaEmax, detectorMaterial )
+crystalDataPanorama = CreateDataset( 1850, "Panorama", phantomLength, "Panorama", datasetSize, panoramaEmin, panoramaEmax, detectorMaterial )
+activityAtTimePanorama, necrAtTimePanorama, trueAtTimePanorama, rPlusSAtTimePanorama, scatterAtTimePanorama, randomAtTimePanorama = NECRatTimeF18(
+    tracerDataPanorama, crystalDataPanorama, pp.Lu176decaysInMass( pp.DetectorMass(detectorMaterial) ), pp.DetectorRadius(),
+    phantomLength )
+mpl.clf()
 
-labels = [ "Siemens NECR", "Explorer NECR", "Siemens True", "Explorer True", "Siemens R+S", "Explorer R+S" ]
-mpl.plot( activityAtTimeSiemens, necrAtTimeSiemens, label=labels[0] )
+labels = [ "Panorama NECR", "Explorer NECR", "Panorama True", "Explorer True", "Panorama R+S", "Panorama R+S" ]
+mpl.plot( activityAtTimePanorama, necrAtTimePanorama, label=labels[0] )
 mpl.plot( activityAtTimeExplorer, necrAtTimeExplorer, label=labels[1] )
-mpl.plot( activityAtTimeSiemens, trueAtTimeSiemens, label=labels[2] )
+mpl.plot( activityAtTimePanorama, trueAtTimePanorama, label=labels[2] )
 mpl.plot( activityAtTimeExplorer, trueAtTimeExplorer, label=labels[3] )
-mpl.plot( activityAtTimeSiemens, rPlusSAtTimeSiemens, label=labels[4] )
+mpl.plot( activityAtTimePanorama, rPlusSAtTimePanorama, label=labels[4] )
 mpl.plot( activityAtTimeExplorer, rPlusSAtTimeExplorer, label=labels[5] )
 mpl.legend( labels )
 mpl.xlabel( "Activity [Bq/ml]" )
 mpl.ylabel( "Counts [/sec]" )
 mpl.gcf().set_size_inches(10, 10)
-mpl.savefig("SiemensVsExplorer_woUncert.pdf")
+mpl.savefig("PanoramaVsExplorer_woUncert.pdf")
 
 mpl.clf()
 
@@ -124,10 +134,10 @@ def CreateErrorEnvelope( tracerData, crystalData, crystalActivity, detectorRadiu
         randomEnvelope.append( entry[5] )
     return result[0][0], np.transpose( necrEnvelope ), np.transpose( np.array(trueEnvelope) ), np.transpose( np.array(rPlusSEnvelope) ), np.transpose( np.array(scatterEnvelope) ), np.transpose( np.array(randomEnvelope) )
 
-detectorMaterial = "LSO"
-activityAtTimeSiemens, necrEnvelopeSiemens, trueEnvelopeSiemens, rPlusSEnvelopeSiemens, scatterEnvelopeSiemens, randomEnvelopeSiemens = CreateErrorEnvelope(
-    tracerDataSiemens, crystalDataSiemens, sqp.Lu176decaysInMass( sqp.DetectorMass(detectorMaterial) ),
-    sqp.DetectorRadius(), phantomLength, EnergyResolution=0.1, TimeResolution=0.5 )
+detectorMaterial = "LYSO"
+activityAtTimePanorama, necrEnvelopePanorama, trueEnvelopePanorama, rPlusSEnvelopePanorama, scatterEnvelopePanorama, randomEnvelopePanorama = CreateErrorEnvelope(
+    tracerDataPanorama, crystalDataPanorama, pp.Lu176decaysInMass( pp.DetectorMass(detectorMaterial) ),
+    pp.DetectorRadius(), phantomLength, EnergyResolution=0.1, TimeResolution=0.5 )
 
 detectorMaterial = "LYSO"
 activityAtTimeExplorer, necrEnvelopeExplorer, trueEnvelopeExplorer, rPlusSEnvelopeExplorer, scatterEnvelopeExplorer, randomEnvelopeExplorer = CreateErrorEnvelope(
@@ -146,28 +156,28 @@ def GetMinMaxFromEnvelope( envelope ):
 
     return allMin, allMax, allMean
 
-necrMinSiemens, necrMaxSiemens, necrMeanSiemens = GetMinMaxFromEnvelope( necrEnvelopeSiemens )
-trueMinSiemens, trueMaxSiemens, trueMeanSiemens = GetMinMaxFromEnvelope( trueEnvelopeSiemens )
-rPlusSMinSiemens, rPlusSMaxSiemens, rPlusSMeanSiemens = GetMinMaxFromEnvelope( rPlusSEnvelopeSiemens )
+necrMinPanorama, necrMaxPanorama, necrMeanPanorama = GetMinMaxFromEnvelope( necrEnvelopePanorama )
+trueMinPanorama, trueMaxPanorama, trueMeanPanorama = GetMinMaxFromEnvelope( trueEnvelopePanorama )
+rPlusSMinPanorama, rPlusSMaxPanorama, rPlusSMeanPanorama = GetMinMaxFromEnvelope( rPlusSEnvelopePanorama )
 
 necrMinExplorer, necrMaxExplorer, necrMeanExplorer = GetMinMaxFromEnvelope( necrEnvelopeExplorer )
 trueMinExplorer, trueMaxExplorer, trueMeanExplorer = GetMinMaxFromEnvelope( trueEnvelopeExplorer )
 rPlusSMinExplorer, rPlusSMaxExplorer, rPlusSMeanExplorer = GetMinMaxFromEnvelope( rPlusSEnvelopeExplorer )
 
-labels = [ "Siemens NECR", "Explorer NECR", "Siemens True", "Explorer True", "Siemens R+S", "Explorer R+S" ]
-mpl.plot( activityAtTimeSiemens, necrMeanSiemens, label=labels[0] )
+labels = [ "Panorama NECR", "Explorer NECR", "Panorama True", "Explorer True", "Panorama R+S", "Explorer R+S" ]
+mpl.plot( activityAtTimeSiemens, necrMeanPanorama, label=labels[0] )
 mpl.plot( activityAtTimeExplorer, necrMeanExplorer, label=labels[1] )
-mpl.plot( activityAtTimeSiemens, trueMeanSiemens, label=labels[2] )
+mpl.plot( activityAtTimeSiemens, trueMeanPanorama, label=labels[2] )
 mpl.plot( activityAtTimeExplorer, trueMeanExplorer, label=labels[3] )
-mpl.plot( activityAtTimeSiemens, rPlusSMeanSiemens, label=labels[4] )
+mpl.plot( activityAtTimeSiemens, rPlusSMeanPanorama, label=labels[4] )
 mpl.plot( activityAtTimeExplorer, rPlusSMeanExplorer, label=labels[5] )
 mpl.legend( labels )
 
-mpl.fill_between( activityAtTimeSiemens, necrMinSiemens, necrMaxSiemens, alpha=0.3 )
+mpl.fill_between( activityAtTimeSiemens, necrMinPanorama, necrMaxPanorama, alpha=0.3 )
 mpl.fill_between( activityAtTimeExplorer, necrMinExplorer, necrMaxExplorer, alpha=0.3 )
-mpl.fill_between( activityAtTimeSiemens, trueMinSiemens, trueMaxSiemens, alpha=0.3 )
+mpl.fill_between( activityAtTimeSiemens, trueMinPanorama, trueMaxPanorama, alpha=0.3 )
 mpl.fill_between( activityAtTimeExplorer, trueMinExplorer, trueMaxExplorer, alpha=0.3 )
-mpl.fill_between( activityAtTimeSiemens, rPlusSMinSiemens, rPlusSMaxSiemens, alpha=0.3 )
+mpl.fill_between( activityAtTimeSiemens, rPlusSMinPanorama, rPlusSMaxPanorama, alpha=0.3 )
 mpl.fill_between( activityAtTimeExplorer, rPlusSMinExplorer, rPlusSMaxExplorer, alpha=0.3 )
 
 mpl.xlabel( "Activity [Bq/ml]" )

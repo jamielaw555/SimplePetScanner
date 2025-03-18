@@ -2,6 +2,7 @@ import PhysicsConstants as PC
 from SimulationDataset import *
 import numpy as np
 import random
+from tqdm import tqdm
 
 
 # Times in seconds
@@ -138,7 +139,7 @@ def DetectedCoincidences( DecayRates, DecayData, SimulationWindow, CoincidenceWi
 
     # Set the first event in each timeline
     nextTimes = []
-    for channel in range( len( DecayRates ) ):
+    for channel in range( len( DecayRates )):
         nextTimes.append( DeltaT( DecayRates[ channel ] ) )
 
     unfinishedTimeline = True
@@ -309,6 +310,7 @@ def GenerateCoincidences_new( DecayRates, DecayData, SimulationWindow, Coinciden
         # Without a recycled photon, generate new ones
         if len(event) == 0:
             minChannel = np.argmin( nextTimes )
+            
             event += DecayData[ minChannel ].SampleOneEvent( EnergyResolution, TimeResolution )
             nextTimes[ minChannel ] += DeltaT( DecayRates[ minChannel ] )
 

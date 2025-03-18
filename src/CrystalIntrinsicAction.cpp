@@ -32,7 +32,7 @@ CrystalIntrinsicAction::~CrystalIntrinsicAction()
 // This function is called at the begining of event
 void CrystalIntrinsicAction::GeneratePrimaries( G4Event* anEvent )
 {
-  if ( m_crystalType != "LSO" && m_crystalType != "LYSO" && m_crystalType != "eCsI")
+  if ( m_crystalType != "LSO" && m_crystalType != "LYSO" && m_crystalType != "eCsI" && m_crystalType != "BGO")
   {
     std::cerr << "Unrecognised crystal type: " << m_crystalType << std::endl;
     exit(1);
@@ -44,6 +44,10 @@ void CrystalIntrinsicAction::GeneratePrimaries( G4Event* anEvent )
   if ( m_crystalType == "eCsI" ){
     Z = 55;
     A = 137;
+  }
+  else if ( m_crystalType == "BGO" ) {
+    Z = 83;
+    A = 214; // Bismuth-214
   }
   G4double ionCharge = 0.0 * eplus;
   G4double excitEnergy = 0.0 * keV;

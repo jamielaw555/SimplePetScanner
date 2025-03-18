@@ -142,6 +142,7 @@ int main( int argc, char* argv[] )
         return 1;
       }
     }
+
     else if ( argument == "--nAluminiumSleeves" )
     {
       if (nextArgument.size() ) {
@@ -153,7 +154,9 @@ int main( int argc, char* argv[] )
           return 1;
         }
       }
+
       else 
+
       {
         std::cerr << "Did not find the number of aluminium sleeves to use" << std::endl;
         return 1;
@@ -184,7 +187,9 @@ int main( int argc, char* argv[] )
 
   // Set user action classes
   DecayTimeFinderAction * decayTimeFinder = new DecayTimeFinderAction( decayOutputFileName );
+
   ActionInitialization * actions = new ActionInitialization( decayTimeFinder, sourceName, detectorLength, phantomLength, detectorMaterial, sourceOffsetMM );
+
   runManager->SetUserInitialization( actions );
 
   // Set up detector

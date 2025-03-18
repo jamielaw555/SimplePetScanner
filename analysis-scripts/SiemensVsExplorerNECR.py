@@ -1,9 +1,14 @@
 import sys
+import os
+print("Plots saved in:", os.getcwd())
 sys.path.append('../analysis/')
 import SiemensQuadraProperties as sqp
 import ExplorerProperties as ep
+import UmiPanoramaProperties as pp
+import OmniLegendProperties as lp
 from ActivityTools import *
 from SimulationDataset import *
+from tqdm import tqdm
 
 import matplotlib.pyplot as mpl
 params = {'legend.fontsize': 15,
@@ -36,9 +41,9 @@ def NECRatTimeF18( tracerData, crystalData, crystalActivity, detectorRadius, pha
     scattersAtTime = []
     randomsAtTime = []
 
-    for time in range( 0, 700, 20 ):
+    for time in tqdm(range( 0, 700, 20 ), desc = "Running Sim"):
         timeSec = float(time) * 60.0
-        activity = F18ActivityAtTime( 1100E6, timeSec )
+        activity = F18ActivityAtTime( 2200E6, timeSec )
 
         necr, true, rPlusS, Scatters, Randoms = DetectedCoincidences( [activity, crystalActivity], [tracerData, crystalData], simulationWindow, coincidenceWindow, detectorRadius, ZMin=-zWindow, ZMax=zWindow )
         necrAtTime.append( necr )
@@ -47,6 +52,7 @@ def NECRatTimeF18( tracerData, crystalData, crystalActivity, detectorRadius, pha
         scattersAtTime.append( Scatters )
         randomsAtTime.append( Randoms )
         activityAtTime.append( activity / phantomVolume )
+        print(f"Activity at point {time}s: {activityAtTime}")
     
     return activityAtTime, necrAtTime, trueAtTime, rPlusSAtTime, scattersAtTime, randomsAtTime
 
@@ -57,62 +63,114 @@ siemensEmin = 435.0
 siemensEmax = 585.0
 explorerEmin = 430.0
 explorerEmax = 645.0
+panoramaEmin = 430.0
+panoramaEmax = 650.0
+legendEmin = 435.0
+legendEmax = 580.0
 
-detectorMaterial = "LSO"
-tracerData = CreateDataset( 1024, "Siemens", phantomLength, "LinearF18", datasetSize, siemensEmin, siemensEmax, detectorMaterial )
-crystalData = CreateDataset( 1024, "Siemens", phantomLength, "Siemens", datasetSize, siemensEmin, siemensEmax, detectorMaterial )
-
-activityAtTimeSiemens, necrAtTimeSiemens, trueAtTimeSiemens, rPlusSAtTimeSiemens, scatterAtTimeSiemens, randomAtTimeSiemens = NECRatTimeF18( tracerData, crystalData, sqp.Lu176decaysInMass( sqp.DetectorMass(detectorMaterial) ), sqp.DetectorRadius(), phantomLength )
-promptAtTimeSiemens = [sum(n) for n in zip(*[trueAtTimeSiemens, scatterAtTimeSiemens, randomAtTimeSiemens])]
+detectorMaterial = "BGO"
+print(f"Creating Legend data")
+tracerData = CreateDataset( 295, "Legend", phantomLength, "LinearF18", datasetSize, legendEmin, legendEmax, detectorMaterial )
+crystalData = CreateDataset( 295, "Legend", phantomLength, "Legend", datasetSize, legendEmin, legendEmax, detectorMaterial )
+mass = lp.DetectorMass(detectorMaterial)
+print(f"Detector mass: {mass}")
+activityAtTimeLegend, necrAtTimeLegend, trueAtTimeLegend, rPlusSAtTimeLegend, scatterAtTimeLegend, randomAtTimeLegend = NECRatTimeF18( tracerData, crystalData, max(1e-10, lp.Bi214decaysInMass(lp.DetectorMass(detectorMaterial))), lp.DetectorRadius(), phantomLength )
+promptAtTimeLegend = [sum(n) for n in zip(*[trueAtTimeLegend, scatterAtTimeLegend, randomAtTimeLegend])]
 mpl.clf()
 
-detectorMaterial = "LYSO"
-tracerData = CreateDataset( 1850, "Explorer", phantomLength, "LinearF18", datasetSize, explorerEmin, explorerEmax, detectorMaterial )
-crystalData = CreateDataset( 1850, "Explorer", phantomLength, "Explorer", datasetSize, explorerEmin, explorerEmax, detectorMaterial )
+# detectorMaterial = "LYSO"
+# tracerData = CreateDataset( 1850, "Explorer", phantomLength, "LinearF18", datasetSize, explorerEmin, explorerEmax, detectorMaterial )
+# crystalData = CreateDataset( 1850, "Explorer", phantomLength, "Explorer", datasetSize, explorerEmin, explorerEmax, detectorMaterial )
 
-activityAtTimeExplorer, necrAtTimeExplorer, trueAtTimeExplorer, rPlusSAtTimeExplorer, scatterAtTimeExplorer, randomAtTimeExplorer = NECRatTimeF18( tracerData, crystalData, ep.Lu176decaysInMass( ep.DetectorMass(detectorMaterial)), ep.DetectorRadius(), phantomLength )
-promptAtTimeExplorer = [sum(n) for n in zip(*[trueAtTimeExplorer, scatterAtTimeExplorer, randomAtTimeExplorer])]
+# activityAtTimeExplorer, necrAtTimeExplorer, trueAtTimeExplorer, rPlusSAtTimeExplorer, scatterAtTimeExplorer, randomAtTimeExplorer = NECRatTimeF18( tracerData, crystalData, ep.Lu176decaysInMass( ep.DetectorMass(detectorMaterial)), ep.DetectorRadius(), phantomLength )
+# promptAtTimeExplorer = [sum(n) for n in zip(*[trueAtTimeExplorer, scatterAtTimeExplorer, randomAtTimeExplorer])]
+# mpl.clf()
+
+
+
+# detectorMaterial = "LSO"
+# tracerData = CreateDataset( 1024, "Siemens", phantomLength, "LinearF18", datasetSize, siemensEmin, siemensEmax, detectorMaterial )
+# crystalData = CreateDataset( 1024, "Siemens", phantomLength, "Siemens", datasetSize, siemensEmin, siemensEmax, detectorMaterial )
+
+# activityAtTimeSiemens, necrAtTimeSiemens, trueAtTimeSiemens, rPlusSAtTimeSiemens, scatterAtTimeSiemens, randomAtTimeSiemens = NECRatTimeF18( tracerData, crystalData, sqp.Lu176decaysInMass( sqp.DetectorMass(detectorMaterial) ), sqp.DetectorRadius(), phantomLength )
+# promptAtTimeSiemens = [sum(n) for n in zip(*[trueAtTimeSiemens, scatterAtTimeSiemens, randomAtTimeSiemens])]
+# mpl.clf()
+
+# detectorMaterial = "LYSO"
+# tracerData = CreateDataset( 1390, "Panorama", phantomLength, "LinearF18", datasetSize, panoramaEmin, panoramaEmax, detectorMaterial )
+# crystalData = CreateDataset( 1390, "Panorama", phantomLength, "Panorama", datasetSize, panoramaEmin, panoramaEmax, detectorMaterial )
+
+# activityAtTimePanorama, necrAtTimePanorama, trueAtTimePanorama, rPlusSAtTimePanorama, scatterAtTimePanorama, randomAtTimePanorama = NECRatTimeF18( tracerData, crystalData, pp.Lu176decaysInMass( pp.DetectorMass(detectorMaterial)), pp.DetectorRadius(), phantomLength )
+# promptAtTimePanorama = [sum(n) for n in zip(*[trueAtTimePanorama, scatterAtTimePanorama, randomAtTimePanorama])]
 mpl.clf()
 
-labels = [ "Siemens NECR", "Explorer NECR", "Siemens True", "Explorer True", "Siemens R+S", "Explorer R+S" ]
-mpl.plot( activityAtTimeSiemens, necrAtTimeSiemens, label=labels[0], linewidth=4.0 )
-mpl.plot( activityAtTimeExplorer, necrAtTimeExplorer, label=labels[1], linewidth=4.0 )
-mpl.plot( activityAtTimeSiemens, trueAtTimeSiemens, label=labels[2], linewidth=4.0 )
-mpl.plot( activityAtTimeExplorer, trueAtTimeExplorer, label=labels[3], linewidth=4.0 )
-mpl.plot( activityAtTimeSiemens, rPlusSAtTimeSiemens, label=labels[4], linewidth=4.0 )
-mpl.plot( activityAtTimeExplorer, rPlusSAtTimeExplorer, label=labels[5], linewidth=4.0 )
+# labels = [ "Panorama NECR", "Legend NECR", "Panorama True", "Legend True", "Panorama R+S", "Legend R+S" ]
+# mpl.plot( activityAtTimePanorama, necrAtTimePanorama, label=labels[0], linewidth=4.0 )
+# mpl.plot( activityAtTimeLegend, necrAtTimeLegend, label=labels[1], linewidth=4.0 )
+# #mpl.plot( activityAtTimePanorama, trueAtTimePanorama, label=labels[2], linewidth=4.0 )
+# #mpl.plot( activityAtTimeLegend, trueAtTimeLegend, label=labels[3], linewidth=4.0 )
+# mpl.plot( activityAtTimePanorama, rPlusSAtTimePanorama, label=labels[4], linewidth=4.0 )
+# mpl.plot( activityAtTimeLegend, rPlusSAtTimeLegend, label=labels[5], linewidth=4.0 )
+# mpl.legend( labels )
+# mpl.xlabel( "Activity [Bq/ml]" )
+# mpl.ylabel( "Counts [/sec]" )
+# mpl.gcf().set_size_inches(10, 10)
+# mpl.savefig(f"PanoramaVsLegend[{phantomLength}].pdf")
+# mpl.clf()
+
+labels = [ "NECR", "Trues", "Scatter", "Randoms" ]
+# mpl.plot( activityAtTimeExplorer, necrAtTimeExplorer, label=labels[0], linewidth=4.0 )
+# #mpl.plot( activityAtTimeExplorer, promptAtTimeExplorer, label=labels[1], linewidth=4.0 )
+# mpl.plot( activityAtTimeExplorer, trueAtTimeExplorer, label=labels[1], linewidth=4.0 )
+# mpl.plot( activityAtTimeExplorer, scatterAtTimeExplorer, label=labels[2], linewidth=4.0 )
+# mpl.plot( activityAtTimeExplorer, randomAtTimeExplorer, label=labels[3], linewidth=4.0 )
+# mpl.legend( labels )
+# mpl.xlabel( "Activity [Bq/ml]" )
+# mpl.xlim( [ 0, 100000 ] )
+# mpl.ylim( [ 0, 8000000 ] )
+# mpl.ylabel( "Counts [/sec]" )
+# mpl.gcf().set_size_inches(10, 10)
+# mpl.savefig(f"Explorer_Counts[{phantomLength}].pdf")
+# mpl.clf()
+
+# mpl.plot( activityAtTimePanorama, necrAtTimePanorama, label=labels[0], linewidth=4.0 )
+# #mpl.plot( activityAtTimePanorama, promptAtTimePanorama, label=labels[1], linewidth=4.0 )
+# mpl.plot( activityAtTimePanorama, trueAtTimePanorama, label=labels[1], linewidth=4.0 )
+# mpl.plot( activityAtTimePanorama, scatterAtTimePanorama, label=labels[2], linewidth=4.0 )
+# mpl.plot( activityAtTimePanorama, randomAtTimePanorama, label=labels[3], linewidth=4.0 )
+# mpl.legend( labels )
+# mpl.xlabel( "Activity [Bq/ml]" )
+# mpl.xlim( [ 0, 100000 ] )
+# mpl.ylim( [ 0, 8000000 ] )
+# mpl.ylabel( "Counts [/sec]" )
+# mpl.gcf().set_size_inches(10, 10)
+# mpl.savefig(f"Panorama_Counts[{phantomLength}].pdf")
+# mpl.clf()
+
+# mpl.plot( activityAtTimeSiemens, necrAtTimeSiemens, label=labels[0], linewidth=4.0 )
+# #mpl.plot( activityAtTimeSiemens, promptAtTimeSiemens, label=labels[1], linewidth=4.0 )
+# mpl.plot( activityAtTimeSiemens, trueAtTimeSiemens, label=labels[1], linewidth=4.0 )
+# mpl.plot( activityAtTimeSiemens, scatterAtTimeSiemens, label=labels[2], linewidth=4.0 )
+# mpl.plot( activityAtTimeSiemens, randomAtTimeSiemens, label=labels[3], linewidth=4.0 )
+# mpl.legend( labels )
+# mpl.xlabel( "Activity [Bq/ml]" )
+# mpl.xlim( [ 0, 100000 ] )
+# mpl.ylim( [ 0, 8000000 ] )
+# mpl.ylabel( "Counts [/sec]" )
+# mpl.gcf().set_size_inches(10, 10)
+# mpl.savefig(f"Siemens_Counts[{phantomLength}].pdf")
+# mpl.clf()
+
+mpl.plot( activityAtTimeLegend, necrAtTimeLegend, label=labels[0], linewidth=4.0 )
+#mpl.plot( activityAtTimeLegend, promptAtTimeLegend, label=labels[1], linewidth=4.0 )
+mpl.plot( activityAtTimeLegend, trueAtTimeLegend, label=labels[1], linewidth=4.0 )
+mpl.plot( activityAtTimeLegend, scatterAtTimeLegend, label=labels[2], linewidth=4.0 )
+mpl.plot( activityAtTimeLegend, randomAtTimeLegend, label=labels[3], linewidth=4.0 )
 mpl.legend( labels )
 mpl.xlabel( "Activity [Bq/ml]" )
+mpl.xlim( [ 0, 100000 ] )
+mpl.ylim( [ 0, 8000000 ] )
 mpl.ylabel( "Counts [/sec]" )
 mpl.gcf().set_size_inches(10, 10)
-mpl.savefig("SiemensVsExplorer.pdf")
-mpl.clf()
-
-labels = [ "NECR", "Prompts", "Trues", "Scatter", "Randoms" ]
-mpl.plot( activityAtTimeExplorer, necrAtTimeExplorer, label=labels[0], linewidth=4.0 )
-mpl.plot( activityAtTimeExplorer, promptAtTimeExplorer, label=labels[1], linewidth=4.0 )
-mpl.plot( activityAtTimeExplorer, trueAtTimeExplorer, label=labels[2], linewidth=4.0 )
-mpl.plot( activityAtTimeExplorer, scatterAtTimeExplorer, label=labels[3], linewidth=4.0 )
-mpl.plot( activityAtTimeExplorer, randomAtTimeExplorer, label=labels[4], linewidth=4.0 )
-mpl.legend( labels )
-mpl.xlabel( "Activity [Bq/ml]" )
-mpl.xlim( [ 0, 20000 ] )
-mpl.ylim( [ 0, 10000000 ] )
-mpl.ylabel( "Counts [/sec]" )
-mpl.gcf().set_size_inches(10, 10)
-mpl.savefig("Explorer_Counts.pdf")
-mpl.clf()
-
-mpl.plot( activityAtTimeSiemens, necrAtTimeSiemens, label=labels[0], linewidth=4.0 )
-mpl.plot( activityAtTimeSiemens, promptAtTimeSiemens, label=labels[1], linewidth=4.0 )
-mpl.plot( activityAtTimeSiemens, trueAtTimeSiemens, label=labels[2], linewidth=4.0 )
-mpl.plot( activityAtTimeSiemens, scatterAtTimeSiemens, label=labels[3], linewidth=4.0 )
-mpl.plot( activityAtTimeSiemens, randomAtTimeSiemens, label=labels[4], linewidth=4.0 )
-mpl.legend( labels )
-mpl.xlabel( "Activity [Bq/ml]" )
-mpl.xlim( [ 0, 40000 ] )
-mpl.ylim( [ 0, 12000000 ] )
-mpl.ylabel( "Counts [/sec]" )
-mpl.gcf().set_size_inches(10, 10)
-mpl.savefig("Siemens_Counts.pdf")
+mpl.savefig(f"Legend_Counts[{phantomLength}][320mm].pdf")
 mpl.clf()

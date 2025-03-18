@@ -143,6 +143,11 @@ G4Material* GetCrystalMaterial(const std::string& Material, const std::string& D
     crystal = LSO;
   else if (Material.empty() && Detector == "Explorer")
     crystal = LYSO;
+    //add in case for panorama 
+  else if (Material.empty() && Detector == "Panorama")
+    crystal = LYSO;
+    else if (Material.empty() && Detector == "Legend")
+    crystal = BGO;
   else {
     std::cerr << "Unrecognised detector material: " << Material << std::endl;
     exit(1);

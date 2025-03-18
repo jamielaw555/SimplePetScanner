@@ -2,6 +2,8 @@
 #include "BasicDetector.h"
 #include "SiemensQuadraDetector.h"
 #include "ExplorerDetector.h"
+#include "UmiPanoramaDetector.h"
+#include "OmniLegendDetector.h"
 
 #include "G4Material.hh"
 #include "G4Box.hh"
@@ -137,6 +139,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   else if ( m_detector.substr( 0, 8 ) == "Explorer" )
   {
     ExplorerDetector::Construct( "Detector", worldLV, m_detector.substr( 8 ), m_detectorLength, m_material );
+  }
+  else if ( m_detector.substr( 0, 8 ) == "Panorama" )
+  {
+    UmiPanoramaDetector::Construct( "Detector", worldLV, m_detector.substr( 8 ), m_energyCounter, m_detectorLength, m_material );
+  }
+  else if ( m_detector.substr( 0, 6 ) == "Legend" )
+  {
+    OmniLegendDetector::Construct( "Detector", worldLV, m_detector.substr( 6 ), m_energyCounter, m_detectorLength, m_material );
   }
   else if ( m_detector == "Basic" )
   {

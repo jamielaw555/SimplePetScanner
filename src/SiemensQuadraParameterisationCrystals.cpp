@@ -18,9 +18,10 @@ SiemensQuadraParameterisationCrystals::SiemensQuadraParameterisationCrystals( G4
     // 32 rings in the detector
     G4int const crystalsPerRing = 7600;
     G4int const blocksPerRing = 38;
-    G4int const ring = floor( copyNo / crystalsPerRing );
-    G4int const nRings = ceil( nCopies / crystalsPerRing );
-    G4int const inRing = copyNo % crystalsPerRing;
+    G4int const ring = floor( copyNo / crystalsPerRing ); //indexes the ring that the crystal is in 
+
+    G4int const nRings = ceil( nCopies / crystalsPerRing ); //number of rings total based on crystal no
+    G4int const inRing = copyNo % crystalsPerRing; // Position within ring using remainder
 
     // 38 detector blocks per ring
     G4int const crystalsPerBlock = 200;

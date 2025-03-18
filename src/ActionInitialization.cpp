@@ -3,6 +3,8 @@
 #include "CrystalIntrinsicAction.h"
 #include "ExplorerDetector.h"
 #include "SiemensQuadraDetector.h"
+#include "UmiPanoramaDetector.h"
+#include "OmniLegendDetector.h"
 
 #include "G4SystemOfUnits.hh"
 
@@ -57,6 +59,28 @@ void ActionInitialization::Build() const
     }
 
     this->SetUserAction( new CrystalIntrinsicAction( -detectorLength, detectorLength, m_detectorMaterial, 393*mm, 411.1*mm ) );
+  }
+  else if ( m_sourceName == "Panorama" )
+  {
+    G4double detectorLength = 741.0*mm;
+    if ( m_detectorLength > 0.0 )
+    {
+      detectorLength = UmiPanoramaDetector::LengthForNRings( UmiPanoramaDetector::NRingsInLength( m_detectorLength ) ); // discrete length steps given by rings
+      detectorLength /= 2.0; // half-lengths
+    }
+
+    this->SetUserAction( new CrystalIntrinsicAction( -detectorLength, detectorLength, m_detectorMaterial, 380*mm, 398.1*mm ) );
+  }
+  else if ( m_sourceName == "Legend" )
+  {
+    G4double detectorLength = 640.0*mm;
+    if ( m_detectorLength > 0.0 )
+    {
+      detectorLength = OmniLegendDetector::LengthForNRings( OmniLegendDetector::NRingsInLength( m_detectorLength ) ); // discrete length steps given by rings
+      detectorLength /= 2.0; // half-lengths
+    }
+
+    this->SetUserAction( new CrystalIntrinsicAction( -detectorLength, detectorLength, m_detectorMaterial, 362.7*mm, 392.7*mm ) );
   }
   else
   {
