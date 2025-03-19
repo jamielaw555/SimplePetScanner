@@ -1,8 +1,10 @@
 import sys
 sys.path.append('../analysis/')
 import SiemensQuadraProperties as sqp
+import UmiPanoramaProperties as pp
 from ActivityTools import *
 from SimulationDataset import *
+import math
 from SinogramTools import *
 
 import multiprocessing as mp
@@ -10,6 +12,7 @@ mp.set_start_method('fork')
 
 from multiprocessing import Pool
 import random
+
 import numpy as np
 import matplotlib.pyplot as mpl
 from array import array
@@ -114,8 +117,9 @@ def CalcCSR(projectionShifted):
 
 def CountRatePerformance(detectorMaterial, nevents, Emin, Emax, simulationWindow, coincidenceWindow, activity, detectorLength, phantomLength):
 
-    tracerData = CreateDataset( detectorLength, "Siemens", phantomLength, "LinearF18", nevents, Emin, Emax, detectorMaterial, SourceOffset=45)
-    #ClusterLimitMM=16
+    tracerData = CreateDataset( detectorLength, "Panorama", phantomLength, "LinearF18", nevents, Emin, Emax, detectorMaterial, SourceOffset=45)
+    print(f"tracerdata is :{tracerData}")
+    ClusterLimitMM=16
     crystalData = None
     crystalActivity = None
     activityList = []
@@ -123,9 +127,11 @@ def CountRatePerformance(detectorMaterial, nevents, Emin, Emax, simulationWindow
 
     # calculate crystalActivity and add it to the activityList only if the crystal material is radioactive
     if detectorMaterial == "LSO" or detectorMaterial == "LYSO" :
-        crystalActivity= sqp.Lu176decaysInMass( sqp.DetectorMassLength( detectorLength, detectorMaterial ) )
-        crystalData = CreateDataset( detectorLength, "Siemens", phantomLength, "Siemens", nevents, Emin, Emax, detectorMaterial )
+        crystalActivity= pp.Lu176decaysInMass( pp.DetectorMassLength( detectorLength, detectorMaterial ) )
+        crystalData = CreateDataset( detectorLength, "Panorama", phantomLength, "Panorama", nevents, Emin, Emax, detectorMaterial )
+        print(f"crystal data is : {crystalData}")
         activityList = [activity, crystalActivity]
+        print(f"Activity List:{activityList}")
         dataList = [tracerData, crystalData]
     else :
         activityList = [activity]
@@ -243,13 +249,13 @@ def CountRatePerformance(detectorMaterial, nevents, Emin, Emax, simulationWindow
 
     return RTOT, Rsr, Rt, Rr, Rs, NECR
 
-detectorMaterial = "LSO"
+detectorMaterial = "LYSO"
 nevents = 1000000
-Emin = 435.0
-Emax = 585.0
+Emin = 430.0
+Emax = 650.0
 simulationWindow = 0.001
 coincidenceWindow = 4.7E-9
-detectorLength = 1024
+detectorLength = 1390
 phantomLength = 700
 startingActivity = 1100E6 #Bq
 
@@ -285,7 +291,7 @@ mpl.plot(activities, Rts, marker='.', linestyle='-', color='black', label='Trues
 mpl.xlabel( "Activity concentration [kBq/ml]")
 mpl.ylabel( "Rate [Mcps]")
 mpl.legend(loc='upper left')
-mpl.savefig("Rates-Siemens.pdf")
+mpl.savefig("Rates-PANO.png")
 
 mpl.clf()
 #Zoomed in rates plot for comparison with siemens paper results
@@ -298,7 +304,7 @@ mpl.xlabel( "Activity concentration [kBq/ml]")
 mpl.ylabel( "Rate [Mcps]")
 mpl.legend(loc='upper right')
 mpl.axis([0, 40, 0, 10])
-mpl.savefig("Rates-Siemens-zoom.pdf")
+mpl.savefig("Rates-PANO-zoom.png")
 
 mpl.clf()
 
@@ -315,7 +321,7 @@ mpl.plot(activities, SF, marker='.', linestyle='-', color='blue')
 mpl.axis([0, 50, 0, 100])
 mpl.xlabel( "Activity concentration [kBq/ml]")
 mpl.ylabel( "Scatter Fraction [%]")
-mpl.savefig("Scatter-fraction-Siemens.pdf")
+mpl.savefig("Scatter-fraction-Panorama.png")
 
 #Scatter fraction measured as a mean of the scatter fractions correspodning to the last 3 measurements
 SFval = np.mean(SF[-3:])

@@ -1,0 +1,59 @@
+/globalField/verbose 1
+/globalField/setValue 0 0 0 tesla
+/run/beamOn 1
+/control/execute vis.mac
+/vis/open OGL 1000x1000-0+0
+/vis/sceneHandler/create OGL
+/vis/viewer/create ! ! 1000x1000-0+0
+/vis/viewer/refresh
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+/vis/drawVolume
+/vis/scene/create
+/vis/scene/add/volume world -1 -1 none m 0 0 0 0 0 0
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 160 150
+/vis/viewer/zoom 4.0
+/vis/geometry/set/visibility World 0 true
+/vis/scene/notifyHandlers
+/vis/viewer/set/style surface
+/vis/geometry/set/colour World 0 0.0 0.0 1.0 0.1
+/vis/scene/notifyHandlers
+/vis/geometry/set/colour Detector 0 0.0 1.0 0.5 1.0
+/vis/scene/notifyHandlers
+/vis/geometry/set/colour Phantom 0 0.0 1.0 1.0 0.3
+/vis/scene/notifyHandlers
+/vis/geometry/set/colour Envelope 0 1.0 1.0 1.0 0.05
+/vis/scene/notifyHandlers
+/vis/scene/add/trajectories smooth
+/tracking/storeTrajectory 2
+/vis/scene/notifyHandlers
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set e- red
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set e+ red
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set mu- pink
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set mu+ pink
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set gamma green
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set neutron yellow
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set proton cyan
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set nu_e grey
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 2
+/vis/scene/notifyHandlers scene-0
+/vis/scene/add/hits
+/vis/scene/notifyHandlers
+/vis/scene/endOfEventAction accumulate
+/vis/viewer/set/autoRefresh true
+/vis/viewer/refresh
+/vis/verbose warnings
+/vis/ogl/set/displayListLimit 600000
+/vis/scene/endOfEventAction accumulate 100

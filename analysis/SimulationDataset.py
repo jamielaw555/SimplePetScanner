@@ -164,7 +164,7 @@ class SimulationDataset:
 
       modifiedEvent = []
       for photon in self.inputData[ eventID ]:
-
+        
         # Apply resolution effects to each measured photon
         newPhoton = [ value for value in photon ]
         newPhoton[DATASET_ENERGY] = photon[DATASET_ENERGY] * ( 1 + np.random.normal( 0.0, EnergyResolution ) ) # Energy resolution as a percentage

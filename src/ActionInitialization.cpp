@@ -68,6 +68,7 @@ void ActionInitialization::Build() const
       detectorLength = UmiPanoramaDetector::LengthForNRings( UmiPanoramaDetector::NRingsInLength( m_detectorLength ) ); // discrete length steps given by rings
       detectorLength /= 2.0; // half-lengths
     }
+    std::cout << "Detector Material: [" << m_detectorMaterial << "]" << std::endl;
 
     this->SetUserAction( new CrystalIntrinsicAction( -detectorLength, detectorLength, m_detectorMaterial, 380*mm, 398.1*mm ) );
   }

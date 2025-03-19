@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../analysis/')
-import SiemensQuadraProperties as sqp
+import UmiPanoramaProperties as pp
 from ActivityTools import *
 from SimulationDataset import *
 import PhysicsConstants as PC
@@ -38,7 +38,7 @@ def CalcStot(Rates, startingActivity):
     fig, ax = mpl.subplots()
     ax.scatter(x, y, label='Data', color='black')
 
-    param_bounds = ([0.1e+06, 0.019], [1.3e+06, 0.024])
+    param_bounds = ([0.1e+06, 0.019], [2.0e+06, 0.024])
     params, cov = curve_fit(Fitfunction, x, y, bounds=param_bounds)
     a_fit, b_fit = params
     x_fit = np.linspace(2.5, 12.5, 75)
@@ -58,7 +58,7 @@ def CalcStot(Rates, startingActivity):
     mpl.legend(loc='upper right')
     mpl.xlabel('Accumulated sleeve wall thickness [mm]')
     mpl.ylabel('Corrected count rate [cps]')
-    mpl.savefig("StotFit.pdf")
+    mpl.savefig("StotFit[PANO].png")
     mpl.clf()
     return Stot
 
@@ -69,11 +69,11 @@ def PlotAxialSensitivityProfile(R1i, R1, STOT, nSlices):
     mpl.plot(sliceno, Si, '.', color='black')
     mpl.xlabel("Slice number")
     mpl.ylabel("Count Rate [cps/MBq]")
-    mpl.savefig("AxialSensitivity.pdf")
+    mpl.savefig("AxialSensitivity[PANO].png")
 
 def OneSim(detectorLength, phantomLength, nEvents, Emin, Emax, detectorMaterial, simulationWindow, nSleeves, nSlices) :
     
-    tracerData = CreateDataset( detectorLength, "SiemensCrystal", phantomLength, "LinearF18", nEvents, Emin, Emax, detectorMaterial, SourceOffset=0, NAluminiumSleeves=nSleeves, ClusterLimitMM=6.4)
+    tracerData = CreateDataset( detectorLength, "PanoramaCrystal", phantomLength, "LinearF18", nEvents, Emin, Emax, detectorMaterial, SourceOffset=0, NAluminiumSleeves=nSleeves, ClusterLimitMM=6.4)
     crystalData = None
     crystalActivity = None
     activityList = []
@@ -81,8 +81,8 @@ def OneSim(detectorLength, phantomLength, nEvents, Emin, Emax, detectorMaterial,
 
     # calculate crystalActivity and add it to the activityList only if the crystal material is radioactive
     if detectorMaterial == "LSO" or detectorMaterial == "LYSO" :
-        crystalActivity= sqp.Lu176decaysInMass( sqp.DetectorMassLength( detectorLength, detectorMaterial ) )
-        crystalData = CreateDataset( detectorLength, "SiemensCrystal", phantomLength, "Siemens", nEvents, Emin, Emax, detectorMaterial, ClusterLimitMM=6.4 )
+        crystalActivity= pp.Lu176decaysInMass( pp.DetectorMassLength( detectorLength, detectorMaterial ) )
+        crystalData = CreateDataset( detectorLength, "PanoramaCrystal", phantomLength, "Panorama", nEvents, Emin, Emax, detectorMaterial, ClusterLimitMM=6.4 )
         activityList = [startingActivity, crystalActivity]
         dataList = [tracerData, crystalData]
     else :
@@ -113,16 +113,16 @@ CorrectedRates = []
 
 #adapt as needed
 nSleeves = [1, 2, 3, 4, 5]
-detectorMaterial = "LSO"
+detectorMaterial = "LYSO"
 nEvents = 2000000
-Emin = 435.0
-Emax = 585.0
+Emin = 430.0
+Emax = 650.0
 simulationWindow = 0.219
 coincidenceWindow = 4.7E-9
-detectorLength = 1024
+detectorLength = 1390
 phantomLength = 700
 startingActivity = 4.56E6 #Bq
-nSlices = 640
+nSlices = 1000
 
 simArgs = []
 for sleeves in nSleeves:

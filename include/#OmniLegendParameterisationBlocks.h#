@@ -1,0 +1,36 @@
+::wq
+egendDetector.cpp.o
+[ 55%] Building CXX object CMakeFiles/SimplePetScanner.dir/src/OmniLegendParameterisationBlocks.cpp.o
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:9:1: error: ‘OmniLegendParameterisationBlocks’ does not name a type
+    9 | OmniLegendParameterisationBlocks::OmniLegendParameterisationBlocks( G4int nCopies, EnergyCounter * Counter ) :
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:59:6: error: ‘OmniLegendParameterisationBlocks’ has not been declared
+   59 | void OmniLegendParameterisationBlocks::ComputeTransformation( const G4int copyNo,  G4VPhysicalVolume* physVol ) const
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:59:113: error: non-member function ‘void ComputeTransformation(G4int, G4VPhysicalVolume*)’ cannot have cv-qualifier
+   59 | on( const G4int copyNo,  G4VPhysicalVolume* physVol ) const
+      |                                                       ^~~~~
+
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp: In function ‘void ComputeTransformation(G4int, G4VPhysicalVolume*)’:
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:61:27: error: ‘m_positions’ was not declared in this scope
+   61 |   if ( copyNo >= ( G4int )m_positions.size() )
+      |                           ^~~~~~~~~~~
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:68:8: error: ‘m_counter’ was not declared in this scope
+   68 |   if ( m_counter )
+      |        ^~~~~~~~~
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:70:5: error: ‘m_visions’ was not declared in this scope
+   70 |     m_visions.at( copyNo )->SetColor( 0.0, m_counter->GetEFraction( copyNo ), 0.0, 1.0 );
+      |     ^~~~~~~~~
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:74:28: error: ‘m_positions’ was not declared in this scope
+   74 |   physVol->SetTranslation( m_positions.at( copyNo ) );
+      |                            ^~~~~~~~~~~
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:75:25: error: ‘m_rotations’ was not declared in this scope
+   75 |   physVol->SetRotation( m_rotations.at( copyNo ) );
+      |                         ^~~~~~~~~~~
+/home/s2165033/SimplePetScanner/src/OmniLegendParameterisationBlocks.cpp:76:50: error: ‘m_visions’ was not declared in this scope
+   76 |  physVol->GetLogicalVolume()->SetVisAttributes( m_visions.at( copyNo ) );
+      |                                                 ^~~~~~~~~
+
+make[2]: *** [CMakeFiles/SimplePetScanner.dir/build.make:272: CMakeFiles/SimplePetScanner.dir/src/OmniLegendParameterisationBlocks.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:83: CMakeFiles/SimplePetScanner.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

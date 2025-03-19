@@ -32,8 +32,11 @@ CrystalIntrinsicAction::~CrystalIntrinsicAction()
 // This function is called at the begining of event
 void CrystalIntrinsicAction::GeneratePrimaries( G4Event* anEvent )
 {
+  
+
   if ( m_crystalType != "LSO" && m_crystalType != "LYSO" && m_crystalType != "eCsI" && m_crystalType != "BGO")
   {
+    
     std::cerr << "Unrecognised crystal type: " << m_crystalType << std::endl;
     exit(1);
   }

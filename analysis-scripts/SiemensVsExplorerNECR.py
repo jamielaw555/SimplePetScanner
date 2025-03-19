@@ -70,8 +70,8 @@ legendEmax = 580.0
 
 detectorMaterial = "BGO"
 print(f"Creating Legend data")
-tracerData = CreateDataset( 295, "Legend", phantomLength, "LinearF18", datasetSize, legendEmin, legendEmax, detectorMaterial )
-crystalData = CreateDataset( 295, "Legend", phantomLength, "Legend", datasetSize, legendEmin, legendEmax, detectorMaterial )
+tracerData = CreateDataset( 295, "LegendCrystal", phantomLength, "LinearF18", datasetSize, legendEmin, legendEmax, detectorMaterial )
+crystalData = CreateDataset( 295, "LegendCrystal", phantomLength, "Legend", datasetSize, legendEmin, legendEmax, detectorMaterial )
 mass = lp.DetectorMass(detectorMaterial)
 print(f"Detector mass: {mass}")
 activityAtTimeLegend, necrAtTimeLegend, trueAtTimeLegend, rPlusSAtTimeLegend, scatterAtTimeLegend, randomAtTimeLegend = NECRatTimeF18( tracerData, crystalData, max(1e-10, lp.Bi214decaysInMass(lp.DetectorMass(detectorMaterial))), lp.DetectorRadius(), phantomLength )
